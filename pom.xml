@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>fcmnativetest</artifactId>
+    <version>0.1</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <exec.mainClass>fcmnativetest.Application</exec.mainClass>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>7.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-graalvm-support</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.nativeimage</groupId>
+                        <artifactId>native-image-maven-plugin</artifactId>
+                        <version>21.0.0.2</version>
+                        <configuration>
+                            <buildArgs>
+                                -J-Xmx4G
+                                -H:Class=fcmnativetest.Application
+                                -H:+ReportExceptionStackTraces
+                                -Dspring.graal.remove-unused-autoconfig=true
+                                -Dspring.graal.remove-yaml-support=true
+                                --enable-https
+                                --enable-http
+                                --enable-all-security-services
+                                --initialize-at-run-time=io.netty.util.internal.logging.Log4JLogger
+                                --initialize-at-run-time=io.grpc.netty.shaded.io.netty.util.internal.logging.Log4JLogger
+                                --initialize-at-build-time=org.slf4j.LoggerFactory
+                                <!-- Java keystore with self signed ca cert for network sniffing/debugging -->
+                                <!-- -J-Djavax.net.ssl.trustStore=/build/customcacerts -->
+                                <!-- -J-Djavax.net.ssl.trustStorePassword=changeit -->
+                            </buildArgs>
+                            <imageName>${project.artifactId}</imageName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>native-image</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
