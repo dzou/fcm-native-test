@@ -3,5 +3,9 @@
   "name":"com.google.firebase.messaging.Message",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
+},
+{
+  "name":"com.google.api.client.util.ArrayMap",
+  "allDeclaredFields":true
 }
 ]
